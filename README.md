@@ -6,7 +6,6 @@ We build an **XGBoost classifier** trained on a reduced dataset for fast perform
 
 ---
 
----
 
 ## 📦 About the Dataset: PaySim
 
