@@ -16,9 +16,6 @@ PaySim is commonly used for:
 - Transaction modeling
 - Machine learning education and benchmarking
 
-📄 Dataset Source:  
-[PaySim on Kaggle](https://www.kaggle.com/datasets/ealaxi/paysim1)
-
 ---
 
 ### 🔍 Dataset Columns Explained
@@ -42,13 +39,7 @@ Fraud cases are very rare in the dataset (~0.1% of total) — making it ideal to
 
 ---
 
-
-## 📚 Project Overview
-
-- 📊 **Dataset**: [PaySim Kaggle Dataset](https://www.kaggle.com/datasets/ealaxi/paysim1)  
-  Simulates mobile money transactions, including types like TRANSFER, CASH_OUT, etc.
-
-- ⚙️ **Method**:
+## ⚙️ Method:
   1. Load the original dataset (~6M rows)
   2. Randomly sample 100,000 transactions for lightweight training
   3. Filter to only `TRANSFER` and `CASH_OUT` transaction types
