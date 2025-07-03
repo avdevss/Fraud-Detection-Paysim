@@ -1,17 +1,30 @@
 import pandas as pd
 import numpy as np
-from sklearn.model_selection import train_test_split
+import os
 
-def load_data(filepath='data/paysim.csv'):
-    df = pd.read_csv(filepath)
-    df = df.sample(n=100000, random_state=42)
-    df = df[df['type'].isin(['TRANSFER', 'CASH_OUT'])].copy()
-    df['errorOrig'] = df['newbalanceOrig'] + df['amount'] - df['oldbalanceOrg']
-    df['errorDest'] = df['oldbalanceDest'] + df['amount'] - df['newbalanceDest']
-    df['hour'] = df['step'] % 24
-    df['hour_sin'] = np.sin(2 * np.pi * df['hour'] / 24)
-    df['hour_cos'] = np.cos(2 * np.pi * df['hour'] / 24)
-    features = ['amount', 'errorOrig', 'errorDest', 'hour_sin', 'hour_cos']
-    X = df[features]
-    y = df['isFraud']
-    return train_test_split(X, y, test_size=0.2, random_state=42)
+# Construct absolute path to paysim.csv
+script_dir = os.path.dirname(__file__)
+data_path = os.path.abspath(os.path.join(script_dir, "..", "data", "paysim.csv"))
+
+# Try loading just the first 200,000 rows
+try:
+    df = pd.read_csv(data_path, nrows=200000)
+except FileNotFoundError:
+    exit()
+except pd.errors.ParserError as e:
+    exit()
+
+# Filter only 'TRANSFER' and 'CASH_OUT' transaction types
+df = df[df['type'].isin(['TRANSFER', 'CASH_OUT'])].copy()
+
+# Feature engineering
+df['errorOrig'] = df['oldbalanceOrg'] - df['newbalanceOrig'] - df['amount']
+df['errorDest'] = df['newbalanceDest'] - df['oldbalanceDest'] - df['amount']
+df['hour'] = df['step'] % 24
+df['hour_sin'] = np.sin(2 * np.pi * df['hour'] / 24)
+df['hour_cos'] = np.cos(2 * np.pi * df['hour'] / 24)
+
+# Save the processed sample
+output_path = os.path.abspath(os.path.join(script_dir, "..", "data", "paysim_sample.csv"))
+df.to_csv(output_path, index=False)
+
