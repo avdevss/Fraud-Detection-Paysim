@@ -1,11 +1,8 @@
-# 🛡️ Fraud Detection on PaySim Dataset
+# 🛡️ Fraud Detection with Interpretable ML
 
-This machine learning project detects **fraudulent mobile money transactions** using the [PaySim dataset](https://www.kaggle.com/datasets/ealaxi/paysim1). 
-
-We build an **XGBoost classifier** trained on a reduced dataset for fast performance and interpret its predictions using **SHAP values**. We also explore **hour-wise trends in fraudulent activity** to gain real-world insights.
+This machine learning project detects **fraudulent mobile money transactions** using a **classification model** and explains its decisions using **SHAP**. We also analyze **hourly patterns in fraud occurrences** to extract real-world insights.
 
 ---
-
 
 ## 📦 About the Dataset: PaySim
 
@@ -39,36 +36,42 @@ Fraud cases are very rare in the dataset (~0.1% of total) — making it ideal to
 
 ---
 
-## ⚙️ Method:
-  1. Load the original dataset (~6M rows)
-  2. Randomly sample 100,000 transactions for lightweight training
-  3. Filter to only `TRANSFER` and `CASH_OUT` transaction types
-  4. Train an **XGBoost model** on processed features
-  5. Use **SHAP** to explain model behavior
-  6. Plot **fraud frequency by hour** to identify high-risk periods
+## ⚙️ Methodology
+
+1. Loaded the original dataset (~6M rows) and randomly sampled **200,000 transactions** for efficiency  
+2. Filtered to include only `TRANSFER` and `CASH_OUT` transaction types, which account for nearly all fraudulent activity  
+3. Performed **feature engineering**:
+   - `errorOrig` = difference between sender's old and new balance  
+   - `errorDest` = mismatch in recipient balances  
+   - Encoded `step` (hour) using `sin()` and `cos()` to capture time-of-day patterns (`hour_sin`, `hour_cos`)  
+4. Trained an **XGBoostClassifier** on these enriched features  
+5. **Tuned the decision threshold** from 0.5 to 0.8 to improve precision and F1-score for the minority fraud class  
+6. Applied **SHAP (SHapley Additive exPlanations)** to interpret model decisions  
+7. Visualized **hourly fraud frequency** to identify suspicious transaction times  
 
 ---
 
 ## 🧠 Model Details
 
 - Model: `XGBoostClassifier`
-- Dataset size: 100,000 (downsampled)
+- Dataset size: 200,000 (downsampled)
 - Target: `isFraud` column
-- Key features: `amount`, `errorOrig`, `errorDest`, time-of-day encoded as sine/cosine
+- Key features: `amount`, `errorOrig`, `errorDest`, `hour_sin`, `hour_cos`
+- Custom decision threshold: **0.8**
 
 ---
 
-## 📊 Results
+## 📊 Results (Threshold = 0.8)
 
 | Metric               | Value      |
 |----------------------|------------|
 | Accuracy             | **1.00**   |
-| Precision (Fraud)    | 0.38       |
-| Recall (Fraud)       | **0.59**   |
-| F1-Score (Fraud)     | 0.46       |
-| ROC AUC Score        | **0.968** ✅ |
+| Precision (Fraud)    | **0.30**   |
+| Recall (Fraud)       | **0.76**   |
+| F1-Score (Fraud)     | **0.43**   |
+| ROC AUC Score        | **0.997** ✅ |
 
-> ✅ Despite a highly imbalanced dataset, the model performs strongly — correctly identifying ~59% of frauds with excellent overall discrimination (ROC AUC ≈ 0.97).
+> ✅ The model achieves **high recall** while significantly improving precision, even under strong class imbalance. AUC ≈ 0.997 indicates excellent discriminatory power.
 
 ---
 
@@ -76,36 +79,34 @@ Fraud cases are very rare in the dataset (~0.1% of total) — making it ideal to
 
 ### 🔹 SHAP Summary Plot
 
-This explains **which features drive the model’s predictions**.  
-Higher SHAP value = more influence on predicting fraud.
+This plot shows **which features influence the fraud prediction the most**.  
+Higher SHAP value = stronger impact on classification.
 
 ![SHAP Summary](outputs/shap_summary.png)
 
 **Insights**:
-- High `amount` increases fraud risk.
-- `errorOrig` and `errorDest` indicate balance issues → key fraud signals.
-- Time features (`hour_sin`, `hour_cos`) help model identify time-based fraud behavior.
+- Large `amount` values increase likelihood of fraud
+- Balance anomalies (`errorOrig`, `errorDest`) are strong fraud signals
+- Temporal patterns (`hour_sin`, `hour_cos`) also influence risk
 
 ---
 
 ### 🔹 Hourly Fraud Trend
 
-This chart shows **average fraud rate by hour of the day**.
+This chart visualizes the **average fraud rate by hour of the day**.
 
 ![Fraud Hourly Trend](outputs/hourly_fraud_trend.png)
 
 **Insights**:
 - Fraud spikes sharply between **2 AM and 6 AM**
-- Suggests most fraud occurs during low-activity/off-watch hours
+- Indicates attackers may exploit off-peak hours
 
 ---
 
 ## 🧪 Technologies Used
 
-- Python 🐍
-- pandas, numpy, matplotlib, seaborn
-- XGBoost
-- scikit-learn
-- SHAP (for explainability)
+- Python 🐍  
+- scikit-learn, XGBoost, SHAP  
+- NumPy, Seaborn, Matplotlib  
 
 ---
