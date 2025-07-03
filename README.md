@@ -1,4 +1,4 @@
-# 🛡️ Fraud Detection with Interpretable ML
+# 🛡️ Fraud Detection
 
 This machine learning project detects **fraudulent mobile money transactions** using a **classification model** and explains its decisions using **SHAP**. We also analyze **hourly patterns in fraud occurrences** to extract real-world insights.
 
@@ -6,7 +6,10 @@ This machine learning project detects **fraudulent mobile money transactions** u
 
 ## 📦 About the Dataset: PaySim
 
-**PaySim** is a synthetic dataset that simulates **real mobile money transactions**, inspired by services like **M-Pesa** in Kenya. It was generated using actual transaction patterns to train and evaluate fraud detection models — **without exposing private user data**.
+**PaySim** is a synthetic dataset that simulates **real mobile money transactions**, inspired by services like **M-Pesa** in Kenya. It was **generated using actual transaction patterns** to train and evaluate fraud detection models — **without exposing private user data**.
+
+📄 **Dataset Source**:  
+➡️ [PaySim Dataset on Kaggle](https://www.kaggle.com/datasets/ealaxi/paysim1)
 
 PaySim is commonly used for:
 - Financial fraud detection
@@ -82,7 +85,7 @@ Fraud cases are very rare in the dataset (~0.1% of total) — making it ideal to
 This plot shows **which features influence the fraud prediction the most**.  
 Higher SHAP value = stronger impact on classification.
 
-![SHAP Summary](shap_summary.png)
+![SHAP Summary](outputs/shap_summary.png)
 
 **Insights**:
 - Large `amount` values increase likelihood of fraud
@@ -95,7 +98,7 @@ Higher SHAP value = stronger impact on classification.
 
 This chart visualizes the **average fraud rate by hour of the day**.
 
-![Fraud Hourly Trend](hourly_fraud_trend.png)
+![Fraud Hourly Trend](outputs/hourly_fraud_trend.png)
 
 **Insights**:
 - Fraud spikes sharply between **2 AM and 6 AM**
