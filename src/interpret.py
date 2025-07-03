@@ -1,21 +1,27 @@
-import os
-import shap
-import xgboost
 import pandas as pd
-from preprocess import load_data
+import shap
+import os
+import xgboost as xgb
 import matplotlib.pyplot as plt
 
-os.makedirs("outputs", exist_ok=True)
+# Load data
+data_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "data", "paysim_sample.csv"))
+df = pd.read_csv(data_path)
 
-def interpret_model():
-    X_train, X_test, y_train, y_test = load_data()
-    model = xgboost.XGBClassifier()
-    model.load_model("models/xgb_paysim.json")
-    explainer = shap.Explainer(model, X_test)
-    shap_values = explainer(X_test)
-    shap.summary_plot(shap_values, X_test, show=False)
-    plt.tight_layout()
-    plt.savefig("outputs/shap_summary.png")
+# Features and model
+features = ['amount', 'errorOrig', 'errorDest', 'hour_sin', 'hour_cos']
+X = df[features]
 
-if __name__ == "__main__":
-    interpret_model()
+model_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "models", "xgb_paysim.json"))
+model = xgb.XGBClassifier()
+model.load_model(model_path)
+
+# SHAP values
+explainer = shap.Explainer(model)
+shap_values = explainer(X)
+
+# SHAP summary plot
+plt.figure()
+shap.summary_plot(shap_values, X, show=False)
+output_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "outputs", "shap_summary.png"))
+plt.savefig(output_path, bbox_inches='tight')
