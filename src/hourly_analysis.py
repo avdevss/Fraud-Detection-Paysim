@@ -1,22 +1,26 @@
-import os
 import pandas as pd
+import os
 import matplotlib.pyplot as plt
+import seaborn as sns
 
-os.makedirs("outputs", exist_ok=True)
+# Load sampled data
+data_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "data", "paysim_sample.csv"))
+df = pd.read_csv(data_path)
 
-def plot_hourly_fraud():
-    df = pd.read_csv('data/paysim.csv')
-    df = df.sample(n=100000, random_state=42)
-    df = df[df['type'].isin(['TRANSFER', 'CASH_OUT'])]
-    df['hour'] = df['step'] % 24
-    hourly_fraud_rate = df.groupby('hour')['isFraud'].mean()
-    plt.figure(figsize=(8, 5))
-    plt.plot(hourly_fraud_rate.index, hourly_fraud_rate.values, marker='o')
-    plt.xlabel("Hour of Day")
-    plt.ylabel("Average Fraud Rate")
-    plt.title("Fraud Trend by Hour")
-    plt.grid(True)
-    plt.savefig("outputs/hourly_fraud_trend.png")
+# Extract hour from 'step' column (each step = 1 hour)
+df['hour'] = df['step'] % 24
 
-if __name__ == "__main__":
-    plot_hourly_fraud()
+# Fraud rate by hour
+hourly = df.groupby('hour')['isFraud'].mean().reset_index()
+
+# Plot
+plt.figure(figsize=(10, 6))
+sns.lineplot(x='hour', y='isFraud', data=hourly, marker='o')
+plt.title("Average Fraud Rate by Hour of Day")
+plt.xlabel("Hour (0-23)")
+plt.ylabel("Fraud Rate")
+plt.grid(True)
+
+# Save
+output_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "outputs", "hourly_fraud_trend.png"))
+plt.savefig(output_path)
