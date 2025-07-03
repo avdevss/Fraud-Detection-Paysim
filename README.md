@@ -74,7 +74,7 @@ Fraud cases are very rare in the dataset (~0.1% of total) — making it ideal to
 | F1-Score (Fraud)     | **0.43**   |
 | ROC AUC Score        | **0.997** ✅ |
 
-> ✅ The model achieves **high recall** while significantly improving precision, even under strong class imbalance. AUC ≈ 0.997 indicates excellent discriminatory power.
+> ✅ Despite a highly imbalanced dataset, the model performs strongly — correctly identifying ~76% of frauds with excellent overall discrimination (ROC AUC ≈ 0.997). The high ROC AUC of 0.997 is due to the structured, synthetic nature of the PaySim dataset and the strong fraud patterns captured in key features like amount, balance errors, and transaction timing.
 
 ---
 
